@@ -1,0 +1,5 @@
+{
+    "python.linting.enabled": false,
+    "files.autoSave": "afterDelay",
+    "editor.fontSize": 13,
+}
