@@ -1,5 +1,9 @@
 import pygame
 import random as r
+from os import path
+
+pygame.init()
+pygame.mixer.init()
 
 '''Widnow size'''
 WIDTH = 500
@@ -16,7 +20,17 @@ PINK = (255, 192, 203)
 '''Controls frames per second'''
 clock = pygame.time.Clock()
 
-pygame.init()
+''' Sounds '''
+sound_dir = path.join(path.dirname(__file__), 'sound_fx')
+
+up = pygame.mixer.Sound(path.join(sound_dir, 'up.wav'))
+down = pygame.mixer.Sound(path.join(sound_dir, 'down.wav'))
+left = pygame.mixer.Sound(path.join(sound_dir, 'left.wav'))
+right = pygame.mixer.Sound(path.join(sound_dir, 'right.wav'))
+key_press = pygame.mixer.Sound(path.join(sound_dir, 'keypress.wav'))
+eat = pygame.mixer.Sound(path.join(sound_dir, 'eat.wav'))
+collision = pygame.mixer.Sound(path.join(sound_dir, 'collision.wav'))
+
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption("Snake")
 running = True
@@ -42,9 +56,9 @@ class Snake:
         self.start_x = 100
         self.start_y = 100
         self.block_size = 7
-        self.dx = 1
+        self.dx = 0
         self.dy = 0
-        self.isMoving = True
+        self.isMoving = False
         self.elongate = False
         self.score = 0
         self.snakePoints = []
@@ -87,6 +101,7 @@ class Snake:
         for i in range(1, len(self.snakePoints)):
             if head_x >= self.snakePoints[i].x  and head_x <= self.snakePoints[i].x + self.block_size:
                 if head_y >= self.snakePoints[i].y and head_y <= self.snakePoints[i].y + self.block_size:
+                    collision.play()
                     self.isMoving = False
 
     def reset(self):
@@ -108,6 +123,7 @@ class Food:
     
     def update(self):
         if self.collision():
+            eat.play()
             self.score += 1
             self.reset()
             snake.elongate = True
@@ -149,22 +165,27 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 if snake.dy != 1 and snake.isMoving:
+                    up.play()
                     snake.dx = 0
                     snake.dy = -1
             elif event.key == pygame.K_DOWN:
                 if snake.dy != -1 and snake.isMoving:
+                    down.play()
                     snake.dx = 0
                     snake.dy = 1
             elif event.key == pygame.K_LEFT:
                 if snake.dx != 1 and snake.isMoving:
+                    left.play()
                     snake.dy = 0
                     snake.dx = -1
             elif event.key == pygame.K_RIGHT:
                 if snake.dx != -1 and snake.isMoving:
+                    right.play()
                     snake.dy = 0
                     snake.dx = 1
             elif event.key == pygame.K_SPACE:
                 if not snake.isMoving:
+                    key_press.play()
                     food.score = 0
                     snake.reset()
                     snake.isMoving = True
